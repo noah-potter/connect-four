@@ -1,6 +1,6 @@
 import { getGameState } from './chips'
 import { Cell } from '../types'
-import { PlayerEnum, GameState } from '../enums'
+import { PlayerColor, GameState } from '../enums'
 import Chip from '../data/Chip'
 
 const getBlankBoard = () => {
@@ -34,9 +34,9 @@ const createBoard = (template: string) => {
     let player
 
     if (character === 'X') {
-      player = PlayerEnum.First
+      player = PlayerColor.Red
     } else if (character === 'O') {
-      player = PlayerEnum.Second
+      player = PlayerColor.Blue
     }
 
     if (player) {
@@ -53,11 +53,11 @@ const createBoard = (template: string) => {
   return board
 }
 
-describe('isGameOver', () => {
+describe('getGameState', () => {
   let boardSetup: string
   let board: Cell[][]
 
-  it('works none wins', () => {
+  it('detects no one winning', () => {
     boardSetup = `
       XXX....
       .......
@@ -113,7 +113,7 @@ describe('isGameOver', () => {
       .......
     `
     board = createBoard(boardSetup)
-    expect(getGameState(board)).toBe(GameState.FirstPlayerWins)
+    expect(getGameState(board)).toBe(GameState.RedPlayerWins)
 
     boardSetup = `
       .......
@@ -124,7 +124,7 @@ describe('isGameOver', () => {
       XXXX...
     `
     board = createBoard(boardSetup)
-    expect(getGameState(board)).toBe(GameState.FirstPlayerWins)
+    expect(getGameState(board)).toBe(GameState.RedPlayerWins)
 
     boardSetup = `
       ...XXXX
@@ -135,7 +135,7 @@ describe('isGameOver', () => {
       .......
     `
     board = createBoard(boardSetup)
-    expect(getGameState(board)).toBe(GameState.FirstPlayerWins)
+    expect(getGameState(board)).toBe(GameState.RedPlayerWins)
 
     boardSetup = `
       .......
@@ -146,7 +146,7 @@ describe('isGameOver', () => {
       ...XXXX
     `
     board = createBoard(boardSetup)
-    expect(getGameState(board)).toBe(GameState.FirstPlayerWins)
+    expect(getGameState(board)).toBe(GameState.RedPlayerWins)
 
     boardSetup = `
       .......
@@ -157,7 +157,7 @@ describe('isGameOver', () => {
       .......
     `
     board = createBoard(boardSetup)
-    expect(getGameState(board)).toBe(GameState.FirstPlayerWins)
+    expect(getGameState(board)).toBe(GameState.RedPlayerWins)
   })
 
   it('doesnt loop horizontally', () => {
@@ -194,7 +194,7 @@ describe('isGameOver', () => {
       .......
     `
     board = createBoard(boardSetup)
-    expect(getGameState(board)).toBe(GameState.FirstPlayerWins)
+    expect(getGameState(board)).toBe(GameState.RedPlayerWins)
 
     boardSetup = `
       .......
@@ -205,7 +205,7 @@ describe('isGameOver', () => {
       X......
     `
     board = createBoard(boardSetup)
-    expect(getGameState(board)).toBe(GameState.FirstPlayerWins)
+    expect(getGameState(board)).toBe(GameState.RedPlayerWins)
 
     boardSetup = `
       ......X
@@ -216,7 +216,7 @@ describe('isGameOver', () => {
       .......
     `
     board = createBoard(boardSetup)
-    expect(getGameState(board)).toBe(GameState.FirstPlayerWins)
+    expect(getGameState(board)).toBe(GameState.RedPlayerWins)
 
     boardSetup = `
       .......
@@ -227,7 +227,7 @@ describe('isGameOver', () => {
       ......X
     `
     board = createBoard(boardSetup)
-    expect(getGameState(board)).toBe(GameState.FirstPlayerWins)
+    expect(getGameState(board)).toBe(GameState.RedPlayerWins)
   })
 
   it('doesnt loop vertically', () => {
@@ -264,7 +264,7 @@ describe('isGameOver', () => {
       .......
     `
     board = createBoard(boardSetup)
-    expect(getGameState(board)).toBe(GameState.FirstPlayerWins)
+    expect(getGameState(board)).toBe(GameState.RedPlayerWins)
 
     boardSetup = `
       ...X...
@@ -275,7 +275,7 @@ describe('isGameOver', () => {
       .......
     `
     board = createBoard(boardSetup)
-    expect(getGameState(board)).toBe(GameState.FirstPlayerWins)
+    expect(getGameState(board)).toBe(GameState.RedPlayerWins)
 
     boardSetup = `
       .......
@@ -286,7 +286,7 @@ describe('isGameOver', () => {
       ...X...
     `
     board = createBoard(boardSetup)
-    expect(getGameState(board)).toBe(GameState.FirstPlayerWins)
+    expect(getGameState(board)).toBe(GameState.RedPlayerWins)
 
     boardSetup = `
       .......
@@ -297,7 +297,7 @@ describe('isGameOver', () => {
       ......X
     `
     board = createBoard(boardSetup)
-    expect(getGameState(board)).toBe(GameState.FirstPlayerWins)
+    expect(getGameState(board)).toBe(GameState.RedPlayerWins)
   })
 
   it('doesnt loop top left to bottom right diagonal', () => {
@@ -323,7 +323,7 @@ describe('isGameOver', () => {
       .......
     `
     board = createBoard(boardSetup)
-    expect(getGameState(board)).toBe(GameState.FirstPlayerWins)
+    expect(getGameState(board)).toBe(GameState.RedPlayerWins)
 
     boardSetup = `
       ...X...
@@ -334,7 +334,7 @@ describe('isGameOver', () => {
       .......
     `
     board = createBoard(boardSetup)
-    expect(getGameState(board)).toBe(GameState.FirstPlayerWins)
+    expect(getGameState(board)).toBe(GameState.RedPlayerWins)
 
     boardSetup = `
       .......
@@ -345,7 +345,7 @@ describe('isGameOver', () => {
       ...X...
     `
     board = createBoard(boardSetup)
-    expect(getGameState(board)).toBe(GameState.FirstPlayerWins)
+    expect(getGameState(board)).toBe(GameState.RedPlayerWins)
 
     boardSetup = `
       .......
@@ -356,7 +356,7 @@ describe('isGameOver', () => {
       X......
     `
     board = createBoard(boardSetup)
-    expect(getGameState(board)).toBe(GameState.FirstPlayerWins)
+    expect(getGameState(board)).toBe(GameState.RedPlayerWins)
   })
 
   it('doesnt loop top right to bottom left diagonal', () => {
@@ -370,5 +370,18 @@ describe('isGameOver', () => {
     `
     board = createBoard(boardSetup)
     expect(getGameState(board)).toBe(GameState.Playing)
+  })
+
+  it('detects ties', () => {
+    boardSetup = `
+    XXXOXXX
+    OOOXOOO
+    XXXOXXX
+    OOOXOOO
+    XXXOXXX
+    OOOXOOO
+    `
+    board = createBoard(boardSetup)
+    expect(getGameState(board)).toBe(GameState.Tie)
   })
 })

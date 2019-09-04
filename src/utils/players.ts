@@ -1,9 +1,9 @@
-import { PlayerEnum } from '../enums'
+import { PlayerColor } from '../enums'
 
-export const getNextPlayer = (player: PlayerEnum) => {
-  if (player === PlayerEnum.First) {
-    return PlayerEnum.Second
+export const getNextPlayer = (player: PlayerColor) => {
+  if (player === PlayerColor.Red) {
+    return PlayerColor.Blue
   }
 
-  return PlayerEnum.First
+  return PlayerColor.Red
 }

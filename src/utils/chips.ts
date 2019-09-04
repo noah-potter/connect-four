@@ -1,5 +1,5 @@
 import { Pos, Cell } from '../types'
-import { PlayerEnum, GameState, playerWonToGameState } from '../enums'
+import { PlayerColor, GameState, playerWonToGameState } from '../enums'
 
 export const getPlacementCell = (
   board: Cell[][],
@@ -22,7 +22,7 @@ export const getPlacementCell = (
   return emptyCell
 }
 
-const hasPlayerChip = (cell: Cell, player: PlayerEnum) => {
+const cellHasPlayerChip = (cell: Cell, player: PlayerColor) => {
   return cell.chip && cell.chip.player === player
 }
 
@@ -36,9 +36,9 @@ export const getGameState = (board: Cell[][]): GameState => {
         let player = cell.chip.player
 
         if (
-          hasPlayerChip(board[col + 1][row + 1], player) &&
-          hasPlayerChip(board[col + 2][row + 2], player) &&
-          hasPlayerChip(board[col + 3][row + 3], player)
+          cellHasPlayerChip(board[col + 1][row + 1], player) &&
+          cellHasPlayerChip(board[col + 2][row + 2], player) &&
+          cellHasPlayerChip(board[col + 3][row + 3], player)
         ) {
           return playerWonToGameState(player)
         }
@@ -55,9 +55,9 @@ export const getGameState = (board: Cell[][]): GameState => {
         let player = cell.chip.player
 
         if (
-          hasPlayerChip(board[col - 1][row + 1], player) &&
-          hasPlayerChip(board[col - 2][row + 2], player) &&
-          hasPlayerChip(board[col - 3][row + 3], player)
+          cellHasPlayerChip(board[col - 1][row + 1], player) &&
+          cellHasPlayerChip(board[col - 2][row + 2], player) &&
+          cellHasPlayerChip(board[col - 3][row + 3], player)
         ) {
           return playerWonToGameState(player)
         }
@@ -74,9 +74,9 @@ export const getGameState = (board: Cell[][]): GameState => {
         let player = cell.chip.player
 
         if (
-          hasPlayerChip(board[col][row + 1], player) &&
-          hasPlayerChip(board[col][row + 2], player) &&
-          hasPlayerChip(board[col][row + 3], player)
+          cellHasPlayerChip(board[col][row + 1], player) &&
+          cellHasPlayerChip(board[col][row + 2], player) &&
+          cellHasPlayerChip(board[col][row + 3], player)
         ) {
           return playerWonToGameState(player)
         }
@@ -93,9 +93,9 @@ export const getGameState = (board: Cell[][]): GameState => {
         let player = cell.chip.player
 
         if (
-          hasPlayerChip(board[col + 1][row], player) &&
-          hasPlayerChip(board[col + 2][row], player) &&
-          hasPlayerChip(board[col + 3][row], player)
+          cellHasPlayerChip(board[col + 1][row], player) &&
+          cellHasPlayerChip(board[col + 2][row], player) &&
+          cellHasPlayerChip(board[col + 3][row], player)
         ) {
           return playerWonToGameState(player)
         }

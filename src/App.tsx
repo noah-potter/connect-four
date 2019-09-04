@@ -1,5 +1,5 @@
 import React from 'react'
-import Game from './components/Game'
+import Routes from './components/Routes'
 
 import styled, { createGlobalStyle } from 'styled-components'
 
@@ -19,12 +19,27 @@ const Root = styled.div`
   text-align: center;
   height: 100vh;
 `
+const Game = styled.div`
+  display: flex;
+  flex: 1 1 auto;
+  justify-content: center;
+  align-items: center;
+`
+
+const GameArea = styled.div`
+  position: relative;
+  display: flex;
+`
 
 const App: React.FC = () => {
   return (
     <Root>
       <GlobalStyle />
-      <Game />
+      <Game>
+        <GameArea>
+          <Routes />
+        </GameArea>
+      </Game>
     </Root>
   )
 }

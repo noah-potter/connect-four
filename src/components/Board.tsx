@@ -1,19 +1,16 @@
-import React, { useState, Fragment, useMemo } from 'react'
+import React, { Fragment, useState, useMemo, useEffect } from 'react'
 import styled from 'styled-components'
 
 import { Cell } from '../types'
-import { PlayerEnum } from '../enums'
-import { columnWidth } from '../consts'
+import { PlayerColor, GameState } from '../enums'
+import { cellStartAnimationDuration } from '../consts'
+import { getPlacementCell, getGameState } from '../utils/chips'
+import { getNextPlayer } from '../utils/players'
 
 import Chip from '../data/Chip'
 
 import ChipContainer from './ChipContainer'
-import { getPlacementCell, getGameState } from '../utils/chips'
-import { getNextPlayer } from '../utils/players'
-
-const border = '2px solid #d1d1d1'
-const spacing = 12
-const backgroundColor = `rgb(236, 236, 236)`
+import CellContainer from './CellContainer'
 
 const Root = styled.div`
   display: flex;
@@ -32,19 +29,6 @@ const Column = styled.div`
   z-index: 1;
 `
 
-const CellContainer = styled.div`
-  display: flex;
-  height: ${columnWidth}px;
-  width: ${columnWidth}px;
-  background: radial-gradient(
-    circle,
-    rgba(0, 0, 0, 0) 0px,
-    rgba(0, 0, 0, 0) 32px,
-    ${backgroundColor} 33px,
-    ${backgroundColor} 100%
-  );
-`
-
 const SelectionOverlay = styled.div`
   display: flex;
   position: absolute;
@@ -58,6 +42,7 @@ const SelectionOverlay = styled.div`
 const SelectionColumn = styled.div`
   cursor: pointer;
   flex: 1 1 auto;
+  border-radius: 8px;
   :hover {
     background: #71717154;
   }
@@ -82,12 +67,15 @@ for (let col = 0; col < 7; col++) {
   }
 }
 
-type Props = {}
+type Props = {
+  firstPlayerColor: PlayerColor
+}
 
-export const Board: React.FC<Props> = (props) => {
+export const Board: React.FC<Props> = ({ firstPlayerColor }) => {
   const [hoveredColumn, setHoveredColumn] = useState(3)
-  const [currentPlayer, setCurrentPlayer] = useState(PlayerEnum.First)
+  const [currentPlayer, setCurrentPlayer] = useState(firstPlayerColor)
   const [placementChip, setPlacementChip] = useState(new Chip(currentPlayer))
+  const [canPlay, setCanPlay] = useState(false)
   const [board, setBoard] = useState(initialBoard)
   const chips = useMemo(() => {
     const chipsInBoard = board
@@ -95,13 +83,35 @@ export const Board: React.FC<Props> = (props) => {
       .map((cell) => cell.chip)
       .filter((chip) => chip) as Chip[]
 
-    chipsInBoard.push(placementChip)
+    if (canPlay) {
+      chipsInBoard.push(placementChip)
+    }
 
     return chipsInBoard
-  }, [board, placementChip])
+  }, [board, placementChip, canPlay])
+
+  useEffect(() => {
+    setTimeout(() => {
+      setCanPlay(true)
+    }, cellStartAnimationDuration * 6 * 7)
+  }, [])
 
   const onRestartGame = () => {
     // Drop all pieces
+    chips.forEach((chip) => {
+      chip.remove()
+    })
+
+    setCanPlay(true)
+  }
+
+  const gameEnded = (finalMessage: string) => {
+    setCanPlay(false)
+
+    setTimeout(() => {
+      const done = window.confirm(finalMessage)
+      onRestartGame()
+    }, 600)
   }
 
   const onSelectColumn = (column: number) => {
@@ -111,14 +121,26 @@ export const Board: React.FC<Props> = (props) => {
       placementChip.place(cell.pos.row, cell.pos.col)
       cell.chip = placementChip
 
-      const gameOver = getGameState(board)
+      const gameState = getGameState(board)
 
-      if (gameOver) {
-        // Show winner screen
-        setTimeout(() => {
-          const done = window.confirm('Someone won!')
-          onRestartGame()
-        }, 500)
+      switch (gameState) {
+        case GameState.Playing: {
+          break
+        }
+        case GameState.RedPlayerWins: {
+          gameEnded('RED won!')
+          break
+        }
+        case GameState.BluePlayerWins: {
+          gameEnded('BLUE won!')
+          break
+        }
+        case GameState.Tie: {
+          gameEnded('Game was a TIE!')
+          break
+        }
+        default:
+          break
       }
 
       const nextPlayer = getNextPlayer(currentPlayer)
@@ -134,7 +156,12 @@ export const Board: React.FC<Props> = (props) => {
           <Column key={index}>
             {column.map((data, index) => (
               <Fragment key={index}>
-                <CellContainer />
+                <CellContainer
+                  pos={data.pos}
+                  hideOutline={Boolean(
+                    data.chip && !data.chip.isPlacing && !data.chip.isRemoving
+                  )}
+                />
               </Fragment>
             ))}
           </Column>
@@ -146,15 +173,17 @@ export const Board: React.FC<Props> = (props) => {
             targetColumn={hoveredColumn}
           />
         ))}
-        <SelectionOverlay>
-          {board.map((_, index) => (
-            <SelectionColumn
-              key={index}
-              onMouseEnter={() => setHoveredColumn(index)}
-              onClick={() => onSelectColumn(index)}
-            />
-          ))}
-        </SelectionOverlay>
+        {canPlay && (
+          <SelectionOverlay>
+            {board.map((_, index) => (
+              <SelectionColumn
+                key={index}
+                onMouseEnter={() => setHoveredColumn(index)}
+                onClick={() => onSelectColumn(index)}
+              />
+            ))}
+          </SelectionOverlay>
+        )}
       </Columns>
     </Root>
   )

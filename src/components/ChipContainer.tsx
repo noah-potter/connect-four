@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import Chip from '../data/Chip'
 import { columnWidth, chipSize } from '../consts'
 import { useSpring, animated } from 'react-spring'
-import { PlayerEnum, playerToChipColor } from '../enums'
+import { PlayerColor, playerToChipColor, playerToChipBoxShadow } from '../enums'
 
 const Root = styled(animated.div)`
   position: absolute;
@@ -15,11 +15,15 @@ const Root = styled(animated.div)`
   align-items: center;
 `
 
-const Sprite = styled(animated.div)<{ player: PlayerEnum }>`
+const Sprite = styled(animated.div)<{ player: PlayerColor }>`
+  display: flex;
+  justify-content: center;
+  align-items: center;
   background: ${(props) => playerToChipColor[props.player]};
   height: ${chipSize}px;
   width: ${chipSize}px;
   border-radius: 100%;
+  /* box-shadow: ${(props) => playerToChipBoxShadow[props.player]}; */
 `
 
 const adjustForOffset = (pos: number) => {
@@ -49,6 +53,10 @@ export const ChipContainer: React.FC<Props> = ({ chip, targetColumn }) => {
   } else if (chip.isPlacing) {
     left = calculateLeftForColumn(targetColumn)
     top = calculateTopForRow(-1)
+  }
+
+  if (chip.isRemoving) {
+    top = 1000
   }
 
   left = adjustForOffset(left)
