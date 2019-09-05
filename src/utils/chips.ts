@@ -22,6 +22,14 @@ export const getPlacementCell = (
   return emptyCell
 }
 
+export const resetBoard = (board: Cell[][]) => {
+  for (let col = 0; col < 7; col++) {
+    for (let row = 0; row < 6; row++) {
+      board[col][row].chip = undefined
+    }
+  }
+}
+
 const cellHasPlayerChip = (cell: Cell, player: PlayerColor) => {
   return cell.chip && cell.chip.player === player
 }

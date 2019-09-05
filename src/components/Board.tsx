@@ -2,9 +2,9 @@ import React, { Fragment, useState, useMemo, useEffect } from 'react'
 import styled from 'styled-components'
 
 import { Cell } from '../types'
-import { PlayerColor, GameState } from '../enums'
+import { PlayerColor, GameState, Page } from '../enums'
 import { cellStartAnimationDuration } from '../consts'
-import { getPlacementCell, getGameState } from '../utils/chips'
+import { getPlacementCell, getGameState, resetBoard } from '../utils/chips'
 import { getNextPlayer } from '../utils/players'
 
 import Chip from '../data/Chip'
@@ -43,8 +43,9 @@ const SelectionColumn = styled.div`
   cursor: pointer;
   flex: 1 1 auto;
   border-radius: 8px;
+  transition: 300ms background-color;
   :hover {
-    background: #71717154;
+    background-color: #00000017;
   }
 `
 
@@ -69,14 +70,17 @@ for (let col = 0; col < 7; col++) {
 
 type Props = {
   firstPlayerColor: PlayerColor
+  setPage: (page: Page) => void
 }
 
-export const Board: React.FC<Props> = ({ firstPlayerColor }) => {
+export const Board: React.FC<Props> = ({ firstPlayerColor, setPage }) => {
   const [hoveredColumn, setHoveredColumn] = useState(3)
   const [currentPlayer, setCurrentPlayer] = useState(firstPlayerColor)
   const [placementChip, setPlacementChip] = useState(new Chip(currentPlayer))
   const [canPlay, setCanPlay] = useState(false)
   const [board, setBoard] = useState(initialBoard)
+  const [mouseInArea, setMouseInArea] = useState(false)
+
   const chips = useMemo(() => {
     const chipsInBoard = board
       .flat()
@@ -90,6 +94,16 @@ export const Board: React.FC<Props> = ({ firstPlayerColor }) => {
     return chipsInBoard
   }, [board, placementChip, canPlay])
 
+  let afterImageRow: number
+  let afterImageCol: number
+
+  const cell = getPlacementCell(board, hoveredColumn)
+
+  if (cell) {
+    afterImageRow = cell.pos.row
+    afterImageCol = cell.pos.col
+  }
+
   useEffect(() => {
     setTimeout(() => {
       setCanPlay(true)
@@ -97,12 +111,9 @@ export const Board: React.FC<Props> = ({ firstPlayerColor }) => {
   }, [])
 
   const onRestartGame = () => {
-    // Drop all pieces
-    chips.forEach((chip) => {
-      chip.remove()
-    })
-
+    resetBoard(board)
     setCanPlay(true)
+    setPage(Page.PlayerSelection)
   }
 
   const gameEnded = (finalMessage: string) => {
@@ -152,15 +163,19 @@ export const Board: React.FC<Props> = ({ firstPlayerColor }) => {
   return (
     <Root>
       <Columns>
-        {board.map((column, index) => (
-          <Column key={index}>
-            {column.map((data, index) => (
-              <Fragment key={index}>
+        {board.map((column, columnIndex) => (
+          <Column key={columnIndex}>
+            {column.map((cell, rowIndex) => (
+              <Fragment key={rowIndex}>
                 <CellContainer
-                  pos={data.pos}
-                  hideOutline={Boolean(
-                    data.chip && !data.chip.isPlacing && !data.chip.isRemoving
-                  )}
+                  pos={cell.pos}
+                  hideOutline={Boolean(cell.chip && !cell.chip.isPlacing)}
+                  showAfterImage={
+                    mouseInArea &&
+                    afterImageRow === rowIndex &&
+                    afterImageCol === columnIndex
+                  }
+                  afterImagePlayer={currentPlayer}
                 />
               </Fragment>
             ))}
@@ -174,7 +189,10 @@ export const Board: React.FC<Props> = ({ firstPlayerColor }) => {
           />
         ))}
         {canPlay && (
-          <SelectionOverlay>
+          <SelectionOverlay
+            onMouseEnter={() => setMouseInArea(true)}
+            onMouseLeave={() => setMouseInArea(false)}
+          >
             {board.map((_, index) => (
               <SelectionColumn
                 key={index}

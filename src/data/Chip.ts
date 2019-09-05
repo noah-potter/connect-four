@@ -5,7 +5,6 @@ import { getRandomGuid } from '../utils/guid'
 export default class Chip {
   id: string
   isPlacing: boolean = true
-  isRemoving: boolean = false
   row: number | null = null
   column: number | null = null
   player: PlayerColor
@@ -19,9 +18,5 @@ export default class Chip {
     this.isPlacing = false
     this.row = _row
     this.column = _column
-  }
-
-  remove = () => {
-    this.isRemoving = true
   }
 }

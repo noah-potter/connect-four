@@ -55,10 +55,6 @@ export const ChipContainer: React.FC<Props> = ({ chip, targetColumn }) => {
     top = calculateTopForRow(-1)
   }
 
-  if (chip.isRemoving) {
-    top = 1000
-  }
-
   left = adjustForOffset(left)
   top = adjustForOffset(top)
 

@@ -98,7 +98,9 @@ export const Routes: React.FC<Props> = (props) => {
     }
     case Page.Game: {
       if (firstPlayerColor) {
-        pageComponent = <Board firstPlayerColor={firstPlayerColor} />
+        pageComponent = (
+          <Board firstPlayerColor={firstPlayerColor} setPage={setPage} />
+        )
       }
       break
     }

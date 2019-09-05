@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { animated, useSpring } from 'react-spring'
 import { columnWidth, chipSize, cellStartAnimationDuration } from '../consts'
 import { Pos } from '../types'
+import { PlayerColor } from '../enums'
 
 const backgroundColor = `white`
 const border = '2px solid #d1d1d1'
@@ -21,21 +22,41 @@ const Root = styled.div`
     ${backgroundColor} 100%
   );
 `
-const CellOutline = styled(animated.div)`
+
+interface CellOutlineProps {
+  showAfterImage: boolean
+  afterImagePlayer: PlayerColor
+}
+
+const CellOutline = styled(animated.div)<CellOutlineProps>`
   border: ${border};
   width: ${chipSize - 4}px;
   height: ${chipSize - 4}px;
   border-radius: 100%;
+  transition: 300ms background-color;
+  background-color: ${({ showAfterImage, afterImagePlayer }) => {
+    if (showAfterImage) {
+      if (afterImagePlayer === PlayerColor.Red) {
+        return '#ff4a2073'
+      } else {
+        return '#3d5aff52'
+      }
+    }
+  }};
 `
 
 type Props = {
   pos: Pos
   hideOutline: boolean
+  showAfterImage: boolean
+  afterImagePlayer: PlayerColor
 }
 
 export const CellContainer: React.FC<Props> = ({
   pos,
   hideOutline: _hideOutline,
+  showAfterImage,
+  afterImagePlayer,
 }) => {
   const [hideOutline, setHideOutline] = useState(false)
 
@@ -62,7 +83,11 @@ export const CellContainer: React.FC<Props> = ({
   return (
     //
     <Root>
-      <CellOutline style={outlineProps} />
+      <CellOutline
+        style={outlineProps}
+        showAfterImage={showAfterImage}
+        afterImagePlayer={afterImagePlayer}
+      />
     </Root>
   )
 }
