@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { animated, useSpring } from 'react-spring'
-import { columnWidth, chipSize, cellStartAnimationDuration } from '../consts'
-import { Pos } from '../types'
-import { PlayerColor } from '../enums'
+import {
+  columnWidth,
+  chipSize,
+  cellStartAnimationDuration,
+} from '../utils/consts'
+import { Position } from '../utils/types'
+import { PlayerColor } from '../utils/enums'
 
 const backgroundColor = `white`
 const border = '2px solid #d1d1d1'
 
+// The board is specifically styled to hide the cell as it falls through the board
+// similar to a read connect four board
 const Root = styled.div`
   display: flex;
   justify-content: center;
@@ -46,30 +52,26 @@ const CellOutline = styled(animated.div)<CellOutlineProps>`
 `
 
 type Props = {
-  pos: Pos
+  position: Position
   hideOutline: boolean
   showAfterImage: boolean
   afterImagePlayer: PlayerColor
 }
 
 export const CellContainer: React.FC<Props> = ({
-  pos,
-  hideOutline: _hideOutline,
+  position,
+  hideOutline,
   showAfterImage,
   afterImagePlayer,
 }) => {
-  const [hideOutline, setHideOutline] = useState(false)
-
-  useEffect(() => {
-    setHideOutline(_hideOutline)
-  }, [_hideOutline])
-
-  // Calculate row and col from bottom left for animation purpose
-  const col = pos.col
-  const row = 5 - pos.row
-  const index = row * 7 + col
+  // Calculate row and column from bottom left for animation purpose
+  const column = position.column
+  const row = 5 - position.row
+  const index = row * 7 + column
   const total = 7 * 6
 
+  // The cells fade into view in order from bottom left to top right
+  // The cells also remove the outline if a piece is placed, it just looks better to me that way
   const outlineProps = useSpring({
     opacity: hideOutline ? 0 : 1 - Math.min(1, index / total - 0.5),
     transform: 'translateY(0px)',
@@ -81,7 +83,6 @@ export const CellContainer: React.FC<Props> = ({
   })
 
   return (
-    //
     <Root>
       <CellOutline
         style={outlineProps}

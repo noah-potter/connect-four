@@ -1,24 +1,24 @@
-import { getGameState } from './chips'
-import { Cell } from '../types'
-import { PlayerColor, GameState } from '../enums'
+import { getGameState, getPlacementCell } from './chips'
+import { Cell } from './types'
+import { PlayerColor, GameState } from './enums'
 import Chip from '../data/Chip'
 
 const getBlankBoard = () => {
   const board: Cell[][] = []
 
-  for (let col = 0; col < 7; col++) {
+  for (let column = 0; column < 7; column++) {
     board.push([])
 
     for (let row = 0; row < 6; row++) {
       const cell = {
-        pos: {
+        position: {
           row: row,
-          col: col,
+          column: column,
         },
         chip: undefined,
       } as Cell
 
-      board[col].push(cell)
+      board[column].push(cell)
     }
   }
 
@@ -41,12 +41,12 @@ const createBoard = (template: string) => {
 
     if (player) {
       const row = Math.floor(index / 7)
-      const col = index % 7
+      const column = index % 7
 
       const chip = new Chip(player)
-      chip.place(row, col)
+      chip.place(row, column)
 
-      board[col][row].chip = chip
+      board[column][row].chip = chip
     }
   })
 
@@ -383,5 +383,97 @@ describe('getGameState', () => {
     `
     board = createBoard(boardSetup)
     expect(getGameState(board)).toBe(GameState.Tie)
+  })
+})
+
+describe('getPlacementCell', () => {
+  let boardSetup: string
+  let board: Cell[][]
+  let cell: Cell | null
+
+  it('works for an empty board', () => {
+    boardSetup = `
+      .......
+      .......
+      .......
+      .......
+      .......
+      .......
+    `
+    board = createBoard(boardSetup)
+    cell = getPlacementCell(board, 0)
+    expect(cell).toBeTruthy()
+    expect(cell && cell.position.row).toBe(5)
+    expect(cell && cell.position.column).toBe(0)
+
+    boardSetup = `
+      .......
+      .......
+      .......
+      .......
+      .......
+      .......
+    `
+    board = createBoard(boardSetup)
+    cell = getPlacementCell(board, 6)
+    expect(cell).toBeTruthy()
+    expect(cell && cell.position.row).toBe(5)
+    expect(cell && cell.position.column).toBe(6)
+  })
+
+  it('works for a column with none empty cells', () => {
+    boardSetup = `
+      .......
+      .......
+      .......
+      .......
+      X......
+      X......
+    `
+    board = createBoard(boardSetup)
+    cell = getPlacementCell(board, 0)
+    expect(cell).toBeTruthy()
+    expect(cell && cell.position.row).toBe(3)
+    expect(cell && cell.position.column).toBe(0)
+
+    boardSetup = `
+      .......
+      .......
+      .......
+      .......
+      ......X
+      ......X
+    `
+    board = createBoard(boardSetup)
+    cell = getPlacementCell(board, 6)
+    expect(cell).toBeTruthy()
+    expect(cell && cell.position.row).toBe(3)
+    expect(cell && cell.position.column).toBe(6)
+  })
+
+  it('returns null for full columns', () => {
+    boardSetup = `
+      X......
+      X......
+      X......
+      X......
+      X......
+      X......
+    `
+    board = createBoard(boardSetup)
+    cell = getPlacementCell(board, 0)
+    expect(cell).toBeNull()
+
+    boardSetup = `
+      ......X
+      ......X
+      ......X
+      ......X
+      ......X
+      ......X
+    `
+    board = createBoard(boardSetup)
+    cell = getPlacementCell(board, 6)
+    expect(cell).toBeNull()
   })
 })

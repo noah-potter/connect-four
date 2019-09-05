@@ -1,5 +1,5 @@
-import { Pos, Cell } from '../types'
-import { PlayerColor, GameState, playerWonToGameState } from '../enums'
+import { Cell } from './types'
+import { PlayerColor, GameState, playerWonToGameState } from './enums'
 
 export const getPlacementCell = (
   board: Cell[][],
@@ -34,6 +34,8 @@ const cellHasPlayerChip = (cell: Cell, player: PlayerColor) => {
   return cell.chip && cell.chip.player === player
 }
 
+// Brute force the solution. Not the most efficient but pretty simple to implement
+// and slightly optimized to not check outside the board
 export const getGameState = (board: Cell[][]): GameState => {
   // Look for a top left, bottom right diagonal win
   for (let col = 0; col <= 3; col++) {

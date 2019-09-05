@@ -1,25 +1,24 @@
-import React, { useRef, useState } from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import Board from './Board'
 import { animated, useSpring } from 'react-spring'
-import { Page, PlayerColor } from '../enums'
+import { Page, PlayerColor } from '../utils/enums'
 
-const PlayerSelection = styled(animated.div)`
+const PageContainer = styled(animated.div)`
+  display: flex;
+  flex-direction: column;
+`
+
+const PlayerSelection = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
 `
-
-const PageContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-`
-
 const Title = styled.div`
-  font-size: 48px;
+  font-size: 72px;
   font-weight: 600;
-  margin-bottom: 100px;
+  margin-bottom: 70px;
   background: linear-gradient(
     48deg,
     rgba(255, 16, 16, 1) 0%,
@@ -42,11 +41,9 @@ const ColorButton = styled.button`
   cursor: pointer;
   padding: 12px 24px;
   transition: 200ms background-color;
-
   :hover {
     background-color: #efefef;
   }
-
   :not(:first-child) {
     margin-left: 12px;
   }
@@ -54,12 +51,14 @@ const ColorButton = styled.button`
 
 type Props = {}
 
+// Rudimentary switch-based pathing
 export const Routes: React.FC<Props> = (props) => {
   const [page, setPage] = useState(Page.PlayerSelection)
   const [firstPlayerColor, setFirstPlayerColor] = useState<PlayerColor | null>(
     null
   )
 
+  // Fade in the title screen
   const playerSelectionProps = useSpring({
     to: {
       opacity: 1,
@@ -79,9 +78,9 @@ export const Routes: React.FC<Props> = (props) => {
   switch (page) {
     case Page.PlayerSelection: {
       pageComponent = (
-        <PageContainer>
+        <PageContainer style={playerSelectionProps}>
           <Title>Connect Four</Title>
-          <PlayerSelection style={playerSelectionProps}>
+          <PlayerSelection>
             Player 1 - Please choose your color
             <Buttons>
               <ColorButton onClick={() => onSelectColor(PlayerColor.Red)}>

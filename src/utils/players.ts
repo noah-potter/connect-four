@@ -1,4 +1,4 @@
-import { PlayerColor } from '../enums'
+import { PlayerColor } from './enums'
 
 export const getNextPlayer = (player: PlayerColor) => {
   if (player === PlayerColor.Red) {

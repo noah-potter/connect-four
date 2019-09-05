@@ -1,7 +1,7 @@
-import { Cell } from '../types'
-import { PlayerColor } from '../enums'
+import { PlayerColor } from '../utils/enums'
 import { getRandomGuid } from '../utils/guid'
 
+// Colored chips the players place on the board
 export default class Chip {
   id: string
   isPlacing: boolean = true
@@ -10,6 +10,7 @@ export default class Chip {
   player: PlayerColor
 
   constructor(_player: PlayerColor) {
+    // The id helps keep component keys unique when rendering the chips
     this.id = getRandomGuid()
     this.player = _player
   }

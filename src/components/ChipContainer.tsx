@@ -1,9 +1,13 @@
 import React from 'react'
 import styled from 'styled-components'
-import Chip from '../data/Chip'
-import { columnWidth, chipSize } from '../consts'
 import { useSpring, animated } from 'react-spring'
-import { PlayerColor, playerToChipColor, playerToChipBoxShadow } from '../enums'
+import Chip from '../data/Chip'
+import { columnWidth, chipSize } from '../utils/consts'
+import {
+  PlayerColor,
+  playerToChipColor,
+  playerToChipBoxShadow,
+} from '../utils/enums'
 
 const Root = styled(animated.div)`
   position: absolute;
@@ -16,24 +20,23 @@ const Root = styled(animated.div)`
 `
 
 const Sprite = styled(animated.div)<{ player: PlayerColor }>`
-  display: flex;
-  justify-content: center;
-  align-items: center;
   background: ${(props) => playerToChipColor[props.player]};
   height: ${chipSize}px;
   width: ${chipSize}px;
   border-radius: 100%;
-  /* box-shadow: ${(props) => playerToChipBoxShadow[props.player]}; */
 `
 
-const adjustForOffset = (pos: number) => {
-  return pos - columnWidth / 2
+// This takes the position the middle of the chip should be at and converts it to the origin position of the chip
+const adjustForOffset = (position: number) => {
+  return position - columnWidth / 2
 }
 
+// The calculates the position of the middle of the given column
 const calculateLeftForColumn = (column: number) => {
   return column * columnWidth + columnWidth / 2
 }
 
+// The calculates the position of the middle of the given row
 const calculateTopForRow = (row: number) => {
   return row * columnWidth + columnWidth / 2
 }
@@ -48,9 +51,11 @@ export const ChipContainer: React.FC<Props> = ({ chip, targetColumn }) => {
   let left = 0
 
   if (!chip.isPlacing && chip.column !== null && chip.row !== null) {
+    // Chip is placed and will move to the correct position
     left = calculateLeftForColumn(chip.column)
     top = calculateTopForRow(chip.row)
   } else if (chip.isPlacing) {
+    // Chip is in the top row waiting to be placed. It follows the column the player is hovering on
     left = calculateLeftForColumn(targetColumn)
     top = calculateTopForRow(-1)
   }
@@ -71,6 +76,9 @@ export const ChipContainer: React.FC<Props> = ({ chip, targetColumn }) => {
 
   let style = {}
 
+  // The horizontal position should be snapped to when the chip is placed so it doesn't
+  // move through the columns in an unrealistic diagonal path. I'd use react-spring but it can't recalculate
+  // the spring to ignore an attribute based on a dynamic flag like this. So I manually set it here
   if (!chip.isPlacing) {
     style = {
       ...props,
@@ -83,7 +91,6 @@ export const ChipContainer: React.FC<Props> = ({ chip, targetColumn }) => {
   }
 
   return (
-    //
     <Root style={style}>
       <Sprite player={chip.player} />
     </Root>
